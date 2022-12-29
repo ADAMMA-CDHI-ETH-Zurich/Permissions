@@ -1,0 +1,7 @@
+include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+
+file(GLOB_RECURSE CURRENT_SOURCES
+        "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp"
+        )
+
+set(CLAID_SOURCES ${CLAID_SOURCES} ${CURRENT_SOURCES})

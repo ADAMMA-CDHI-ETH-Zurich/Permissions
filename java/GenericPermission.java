@@ -13,24 +13,23 @@ public class GenericPermission extends Permission {
     private final MainActivity activity;
     private String permissionName = null;
     private String[] permissionNames;
-    private final String userDialogTitle;
-    private final String userDialogBody;
+    private static final String userDialogTitle = "You need to allow permissions";
+    private String userDialogBody = "In the following screen you will need to allow %s\n" +
+            "to use this app. If you can't see the option you will need to open Settings->" +
+            "Apps->CLAIDDemo->Permissions.";
 
     public GenericPermission(MainActivity activity, String manifestPermissionName) {
         super(activity);
         this.activity = super.getActivity();
         this.permissionName = manifestPermissionName;
-        userDialogTitle = activity.getString(R.string.title_generic_permission);
-        userDialogBody = activity.getString(R.string.body_generic_permission,
-                manifestPermissionName);
+        this.userDialogBody = String.format(userDialogBody, manifestPermissionName);
     }
 
     public GenericPermission(MainActivity activity, String[] manifestPermissionNames) {
         super(activity);
         this.activity = super.getActivity();
         this.permissionNames = manifestPermissionNames;
-        userDialogTitle = activity.getString(R.string.title_generic_permission);
-        userDialogBody = activity.getString(R.string.body_generic_permission,
+        userDialogBody = String.format(userDialogBody,
                 String.join(" and ", manifestPermissionNames));
     }
 

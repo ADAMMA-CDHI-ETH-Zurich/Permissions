@@ -25,7 +25,7 @@ public abstract class Permission
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(permissionTitle);
         builder.setMessage(permissionBody);
-        builder.setPositiveButton(R.string.ok_permission, (DialogInterface.OnClickListener) (dialog, id) -> {
+        builder.setPositiveButton("OK", (DialogInterface.OnClickListener) (dialog, id) -> {
                     PackageManager packageManager = activity.getPackageManager();
                     Intent intent = packageManager.getLaunchIntentForPackage(activity
                             .getPackageName());

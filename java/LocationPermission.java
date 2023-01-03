@@ -10,6 +10,16 @@ import com.example.claiddemo.MainActivity;
 import com.example.claiddemo.R;
 
 public class LocationPermission extends Permission {
+    private static final String userDialogTitleLocation = "You need to allow location permission";
+    private static final String userDialogBodyLocation = "You need to allow location permission to use this app";
+    private static final String userDialogTitleBackgroundOver29 = "You need to allow location permission";
+    private static final String userDialogBodyBackgroundOver29 = "In the following screen you will " +
+    "need to select 'Allow all the time'.\nIf you can't see the option you will need to open " +
+    "Settings->Apps->CLAIDDemo->Permissions->Location->'Allow all the time'";
+    private static final String userDialogTitleFineLocationOver29 = "You need to allow precise location permission";
+    private static final String userDialogBodyFineLocationOver29 = "In the following screen you will need to " +
+    "select 'Use precise location'.\nIf you can't see the option you will need to open " +
+    "Settings->Apps->CLAIDDemo->Permissions->Location->'Use precise location'";
 
     private final MainActivity activity;
     private final String[] stringPermissionsFineCoarse = new String[]{
@@ -71,21 +81,17 @@ public class LocationPermission extends Permission {
                     // On API 30+ after two denial the request won't be prompted again
                     if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ){
                         if (!isBackgroundGranted()) {
-                            displayBlockingAlertDialog(activity.getString(R.string
-                                            .title_background_location_permission_overAPI29),
-                                    activity.getString(R.string
-                                            .body_background_location_permission_overAPI29));
+                            displayBlockingAlertDialog(userDialogTitleBackgroundOver29,
+                                    userDialogBodyBackgroundOver29);
                         }
                         else if (!isFineGranted()) {
-                            displayBlockingAlertDialog(activity.getString(R.string
-                                            .title_fine_location_permission_overAPI29),
-                                    activity.getString(R.string
-                                            .body_fine_location_permission_overAPI29));
+                            displayBlockingAlertDialog(userDialogTitleFineLocationOver29,
+                                    userDialogBodyFineLocationOver29);
                         }
                     }
                     else if (!isGranted()) {
-                        displayBlockingAlertDialog(activity.getString(R.string.title_location_permission),
-                                activity.getString(R.string.body_location_permission));
+                        displayBlockingAlertDialog(userDialogTitleLocation,
+                                userDialogBodyLocation);
                     }
                 });
 

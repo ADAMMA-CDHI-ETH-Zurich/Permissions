@@ -1,16 +1,16 @@
 #pragma once
-#include "Permission.hpp"
 #import <AVFoundation/AVFoundation.h>
 #import <AVFoundation/AVAudioSession.h>
-#import "ViewController.hpp"
+#include "Permission.hpp"
+
 @interface MicrophonePermission : Permission
 
 - (bool)isGranted;
 
 - (void)blockingRequest;
 
-@property (nonatomic, strong) NSString *permissionTitle;
+@property (strong) NSString *userDialogTitle;
 
-@property (nonatomic, strong) NSString *permissionBody;
+@property (strong) NSString *userDialogBody;
 
 @end

@@ -3,19 +3,22 @@
 @implementation Permission
 
 
-- (instancetype)init
+- (instancetype)init:(NSString*) permissionTitle permissionBody:(NSString*)permissionBody
 {
     self = [super init];
     if (self) {
+        _permissionTitle = permissionTitle;
+        _permissionBody = permissionBody;
     }
     return self;
 }
 
     
-- (void)displayBlockingAlertDialog:(NSString*) permissionTitle permissionBody:(NSString*)permissionBody{
+- (void)displayBlockingAlertDialog
+{
     dispatch_async(dispatch_get_main_queue(), ^(void){
-        _alert = [[UIAlertView alloc] initWithTitle:permissionTitle
-                                            message:permissionBody
+        _alert = [[UIAlertView alloc] initWithTitle:_permissionTitle
+                                            message:_permissionBody
                                             delegate:self
                                   cancelButtonTitle:@"OK"
                                   otherButtonTitles:nil,nil];
@@ -34,8 +37,8 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
         // We reload to check if we have permissions
-        [self displayBlockingAlertDialog:@"This app needs microphone access permission to work"
-                          permissionBody:@"You need to allow microphone access permission. If you don't see the alert, you need to allow in: \nSettings->APP_NAME->Microphone->Always"];
+        [self displayBlockingAlertDialog];
+
     }
 }
 

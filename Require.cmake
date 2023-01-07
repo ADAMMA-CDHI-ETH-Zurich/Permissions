@@ -19,3 +19,11 @@ set(CLAID_IOS_SOURCES ${CLAID_IOS_SOURCES} ${CURRENT_IOS_MM_SOURCES})
 IF(EXISTS "${CMAKE_CURRENT_LIST_DIR}/java" AND IS_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/java")
         set(CLAID_JAVA_DIRECTORIES ${CLAID_JAVA_DIRECTORIES} ${CMAKE_CURRENT_LIST_DIR}/java)
 endif()
+
+if(IOS)
+        # Add required iOS libraries
+        find_library(CORELOCATION CoreLocation)
+        find_library(COREMOTION CoreMotion)
+        list(APPEND CLAID_LINK_LIBRARIES ${CORELOCATION})
+        list(APPEND CLAID_LINK_LIBRARIES ${COREMOTION})
+endif()

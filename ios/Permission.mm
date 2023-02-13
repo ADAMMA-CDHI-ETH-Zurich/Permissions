@@ -1,9 +1,8 @@
-#include "Permission.hpp"
+#import "Permission.hpp"
 
 @implementation Permission
 
-
-- (instancetype)init:(NSString*) permissionTitle permissionBody:(NSString*)permissionBody
+- (instancetype)init:(NSString*) permissionTitle permissionBody:(NSString*)permissionBody;
 {
     self = [super init];
     if (self) {
@@ -13,35 +12,27 @@
     return self;
 }
 
-    
 - (void)displayBlockingAlertDialog
 {
     dispatch_async(dispatch_get_main_queue(), ^(void){
-        _alert = [[UIAlertView alloc] initWithTitle:_permissionTitle
-                                            message:_permissionBody
-                                            delegate:self
-                                  cancelButtonTitle:@"OK"
-                                  otherButtonTitles:nil,nil];
-        [_alert show];
+        UIWindowScene *windowScene = (UIWindowScene *)[[UIApplication sharedApplication].connectedScenes anyObject];
+        UIWindow *window = windowScene.windows.firstObject;
         
-        // Prompt user to settings
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:_permissionTitle message:_permissionBody preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+        }];
+        
+        [alertController addAction:okAction];
+        
+        [window.rootViewController presentViewController:alertController animated:YES completion:nil];
     });
-
 }
 
-- (bool)isGranted{};
 
-- (void)blockingRequest{};
+- (bool)isGranted{}
 
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        // We reload to check if we have permissions
-        [self displayBlockingAlertDialog];
-
-    }
-}
-
+- (void)blockingRequest{}
 
 @end
-

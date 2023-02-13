@@ -5,11 +5,13 @@
 
 @interface Permission : NSObject <UIAlertViewDelegate>
 
-@property (strong) UIAlertView *alert;
+@property (strong, nonatomic) UIAlertController *alertController;
 
-@property (strong) NSString *permissionTitle;
+@property (strong, nonatomic) NSString *permissionTitle;
 
-@property (strong) NSString *permissionBody;
+@property (strong, nonatomic) NSString *permissionBody;
+
+@property (assign, nonatomic) BOOL shouldDisplayAlert;
 
 - (instancetype)init:(NSString*) permissionTitle permissionBody:(NSString*)permissionBody;
 

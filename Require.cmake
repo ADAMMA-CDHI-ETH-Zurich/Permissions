@@ -24,6 +24,9 @@ if(IOS)
         # Add required iOS libraries
         find_library(CORELOCATION CoreLocation)
         find_library(COREMOTION CoreMotion)
+        find_library(USERNOTIFICATION UserNotifications)
+
         list(APPEND CLAID_LINK_LIBRARIES ${CORELOCATION})
         list(APPEND CLAID_LINK_LIBRARIES ${COREMOTION})
+        list(APPEND CLAID_LINK_LIBRARIES ${USERNOTIFICATION})
 endif()

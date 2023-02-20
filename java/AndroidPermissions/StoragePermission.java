@@ -1,52 +1,57 @@
 package AndroidPermissions;
-
-import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION;
-import android.content.Intent;
-import android.net.Uri;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Handler;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-
-import com.example.claiddemo.BuildConfig;
-import com.example.claiddemo.MainActivity;
-import com.example.claiddemo.R;
 
 public class StoragePermission extends Permission {
-    private final static int APP_STORAGE_ACCESS_REQUEST_CODE = 501;
-    private final MainActivity activity;
+    private final AppCompatActivity activity;
+    private final static int APP_STORAGE_REQUEST_CODE = 400;
+    private static final int delayTime = 7000;   // (ms) Period we wait before checking user's choice (permission granted or not)
     private static final String userDialogTitle = "You need to allow storage permission";
     private static final String userDialogBody = "In the following screen you will need to allow" +
             " storage permission to use this app";
+    private static final String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
-
-    public StoragePermission(MainActivity activity) {
+    public StoragePermission(AppCompatActivity activity) {
         super(activity);
         this.activity = super.getActivity();
     }
 
-    //TODO: when user come back after giving permission, we don't need to reboot app
+    @Override
+    public boolean isGranted() {
+        int permissionStatus = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return permissionStatus == PackageManager.PERMISSION_GRANTED;
+    }
+
     @Override
     public void blockingRequest() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             if (isGranted())
                 System.out.println("We have storage permissions");
-            else if (!Environment.isExternalStorageManager())
-            {
-                displayBlockingAlertDialog(userDialogTitle, userDialogBody);
-                Intent intent = new Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                        Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-                activity.startActivityForResult(intent, APP_STORAGE_ACCESS_REQUEST_CODE);
+            else {
+                ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, APP_STORAGE_REQUEST_CODE);
+                checkPermissionAfterDelay();
             }
         }
     }
 
-
-    @Override
-    public boolean isGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return Environment.isExternalStorageManager();
-        }
-        return true;
+    private void checkPermissionAfterDelay()
+    {
+        new Handler().postDelayed(() -> {
+            if (!isGranted()) {
+                displayBlockingAlertDialog(userDialogTitle, userDialogBody);
+            }
+        }, delayTime);
     }
 
+    public void displayBlockingAlertDialog(String alertTitle, String alertBody){
+        super.displayBlockingAlertDialog(alertTitle, alertBody);
+    }
 }

@@ -3,27 +3,22 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 
 public class LocationPermission extends Permission {
-    private final AppCompatActivity activity;
     private static final int LOCATION_REQUEST_CODE = 200;
-    private static final int delayTime = 7000;   // (ms) Period we wait before checking user's choice (permission granted or not)
     private static final String userDialogTitleLocation = "You need to allow location permission";
-    private static final String userDialogBodyLocation = "You need to allow location permission to use this app";
+    private static final String userDialogBodyLocation = "You need to allow location permission to use this app." +
+    " If you can't see the option you need to open\n" + "Settings->Apps->CLAIDDemo->Permissions";
     private static final String userDialogTitleBackgroundOver29 = "You need to allow location permission";
-    private static final String userDialogBodyBackgroundOver29 = "In the following screen you will " +
-    "need to select 'Allow all the time'.\nIf you can't see the option you will need to open " +
+    private static final String userDialogBodyBackgroundOver29 = "In the following screen you " +
+    "need to select 'Allow all the time'.\nIf you can't see the option you need to open " +
     "Settings->Apps->CLAIDDemo->Permissions->Location->'Allow all the time'";
     private static final String userDialogTitleFineLocationOver29 = "You need to allow precise location permission";
-    private static final String userDialogBodyFineLocationOver29 = "In the following screen you will need to " +
-    "select 'Use precise location'.\nIf you can't see the option you will need to open " +
+    private static final String userDialogBodyFineLocationOver29 = "In the following screen you need to " +
+    "select 'Use precise location'.\nIf you can't see the option you need to open " +
     "Settings->Apps->CLAIDDemo->Permissions->Location->'Use precise location'";
-
     private final String[] stringPermissionsFineCoarse = new String[]{
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -39,10 +34,6 @@ public class LocationPermission extends Permission {
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
 
-    public LocationPermission(AppCompatActivity activity) {
-        super(activity);
-        this.activity = super.getActivity();
-    }
 
     @Override
     public boolean isGranted() {
@@ -55,20 +46,20 @@ public class LocationPermission extends Permission {
 
     public boolean isCoarseGranted() {
         return ContextCompat.checkSelfPermission(
-                this.activity, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                super.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED;
     }
 
     public boolean isFineGranted() {
         return ContextCompat.checkSelfPermission(
-                this.activity, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                super.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED;
     }
 
     public boolean isBackgroundGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return ContextCompat.checkSelfPermission(
-                    this.activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+                    super.getContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED;
         }
         return (isCoarseGranted() && isFineGranted());
@@ -76,43 +67,35 @@ public class LocationPermission extends Permission {
 
     @Override
     public void blockingRequest() {
-        if (isGranted()) {
-            System.out.println("We have location permissions");
-        }
-        // On API 30+ we need to perform incremental permissions request
-        else if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
-            if (!isFineGranted()) {
-                ActivityCompat.requestPermissions(activity, stringPermissionsFineCoarse, LOCATION_REQUEST_CODE);
-                checkPermissionAfterDelay(userDialogTitleFineLocationOver29, userDialogBodyFineLocationOver29);
+            if (isGranted()) {
+                System.out.println("We have location permissions");
             }
-            if (!isBackgroundGranted()) {
-                ActivityCompat.requestPermissions(activity, stringPermissionsBackground, LOCATION_REQUEST_CODE+1);
-                checkPermissionAfterDelay(userDialogTitleBackgroundOver29, userDialogBodyBackgroundOver29);
-            }
-        }
-        // On API 29 we need to ask all permissions together
-        else if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.Q)) {
-            ActivityCompat.requestPermissions(activity, stringPermissionAPI29, LOCATION_REQUEST_CODE);
-            checkPermissionAfterDelay(userDialogTitleLocation, userDialogBodyLocation);
-        }
-        // On API < 29 we don't need background location permission
-        else {
-            ActivityCompat.requestPermissions(activity, stringPermissionsFineCoarse, LOCATION_REQUEST_CODE);
-            checkPermissionAfterDelay(userDialogTitleLocation, userDialogBodyLocation);
-        }
-    }
+            // On API 30+ we need to perform incremental permissions request
+            else if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+                if (!isFineGranted()) {
+                    super.startIntentWithExtras(stringPermissionsFineCoarse, LOCATION_REQUEST_CODE, userDialogTitleFineLocationOver29, userDialogBodyFineLocationOver29);
+                }
 
-    private void checkPermissionAfterDelay(String alertTitle, String alertBody)
-    {
-        new Handler().postDelayed(() -> {
-            if (!isGranted()) {
-                displayBlockingAlertDialog(alertTitle, alertBody);
-            }
-        }, delayTime);
-    }
+                while (!isFineGranted()) {
+                }
 
-    public void displayBlockingAlertDialog(String alertTitle, String alertBody){
-        super.displayBlockingAlertDialog(alertTitle, alertBody);
+                if (!isBackgroundGranted()) {
+                    super.startIntentWithExtras(stringPermissionsBackground, LOCATION_REQUEST_CODE, userDialogTitleBackgroundOver29, userDialogBodyBackgroundOver29);
+                }
+            }
+            // On API 29 we need to ask all permissions together
+            else if ((Build.VERSION.SDK_INT == Build.VERSION_CODES.Q)) {
+                if (!isBackgroundGranted() || !isFineGranted()) {
+                    super.startIntentWithExtras(stringPermissionAPI29, LOCATION_REQUEST_CODE, userDialogTitleBackgroundOver29, userDialogBodyBackgroundOver29);
+                }
+            }
+            // On API < 29 we don't need background location permission
+            else {
+                if (!isFineGranted()) {
+                    super.startIntentWithExtras(stringPermissionsFineCoarse, LOCATION_REQUEST_CODE, userDialogTitleLocation, userDialogBodyLocation);
+                }
+            }
+            while (!isGranted()){}
     }
 
 }

@@ -1,12 +1,13 @@
 package AndroidPermissions;
-import static com.example.claiddemo.PermissionActivity.EXTRA_DIALOG_BODY;
-import static com.example.claiddemo.PermissionActivity.EXTRA_DIALOG_TITLE;
-import static com.example.claiddemo.PermissionActivity.EXTRA_PERMISSIONS;
-import static com.example.claiddemo.PermissionActivity.EXTRA_REQUEST_CODE;
+
+import static AndroidPermissions.PermissionActivity.EXTRA_DIALOG_BODY;
+import static AndroidPermissions.PermissionActivity.EXTRA_DIALOG_TITLE;
+import static AndroidPermissions.PermissionActivity.EXTRA_PERMISSIONS;
+import static AndroidPermissions.PermissionActivity.EXTRA_REQUEST_CODE;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import com.example.claiddemo.PermissionActivity;
 import java.util.List;
 import JavaCLAID.CLAID;
 

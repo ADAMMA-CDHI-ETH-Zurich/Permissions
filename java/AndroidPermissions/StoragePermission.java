@@ -1,4 +1,6 @@
 package AndroidPermissions;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -59,6 +61,7 @@ public class StoragePermission extends Permission {
             } catch (Exception e) {
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
                 super.getContext().startActivity(intent);
             }
 
